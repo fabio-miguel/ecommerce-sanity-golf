@@ -212,7 +212,8 @@ function DesktopHeader({isHome, menu, openCart, title}) {
   const {y} = useWindowScroll();
   return (
     <>
-      {/* <AnnouncementBar /> */}
+      {/* Added AnnouncementBar component */}
+      <AnnouncementBar />
       <header
         role="banner"
         className={`${

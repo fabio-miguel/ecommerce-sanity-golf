@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import {useRef} from 'react';
+import {useRef, Suspense} from 'react';
 import {useScroll} from 'react-use';
 import {flattenConnection, CartForm, Image, Money} from '@shopify/hydrogen';
 
@@ -10,14 +10,29 @@ import {
   Text,
   Link,
   FeaturedProducts,
+  CartLoading,
 } from '~/components';
+import {Await} from '@remix-run/react';
 import {getInputStyleClasses} from '~/lib/utils';
+import ShippingProgressBar from './ShippingProgressBar';
 
 export function Cart({layout, onClose, cart}) {
   const linesCount = Boolean(cart?.lines?.edges?.length || 0);
 
   return (
     <>
+      {/* Added ShippingProgressBar Comp */}
+      {/* // Supspense required to provide fallback as ShippingProgress
+      can provide null before all children have loaded.  */}
+      <Suspense fallback={<CartLoading />}>
+        <Await resolve={cart?.cost?.totalAmount}>
+          {(totalAmount) => {
+            return <ShippingProgressBar totalAmount={totalAmount} />;
+          }}
+          <ShippingProgressBar totalAmount={cart?.cost?.totalAmount} />
+        </Await>
+      </Suspense>
+
       <CartEmpty hidden={linesCount} onClose={onClose} layout={layout} />
       <CartDetails cart={cart} layout={layout} />
     </>
