@@ -1,7 +1,7 @@
-import {useParams, Form, Await, useMatches} from '@remix-run/react';
+import {useParams, Form, Await, useMatches, useFetcher} from '@remix-run/react';
 import {useWindowScroll} from 'react-use';
 import {Disclosure} from '@headlessui/react';
-import {Suspense, useEffect, useMemo} from 'react';
+import {Suspense, useEffect, useMemo, useState} from 'react';
 import {CartForm} from '@shopify/hydrogen';
 import {
   Drawer,
@@ -210,10 +210,43 @@ function MobileHeader({title, isHome, openCart, openMenu}) {
 function DesktopHeader({isHome, menu, openCart, title}) {
   const params = useParams();
   const {y} = useWindowScroll();
+  // Added useFetcher, useIsHydrated to create dynamic values in AnnoucementBar component
+  const fetcher = useFetcher();
+  const isHydrated = useIsHydrated();
+  const [dateValidated, setDateValidated] = useState([]);
+  const [extractedDate, setExtractedDate] = useState('');
+
+  useEffect(() => {
+    if (fetcher.state === 'idle' && fetcher.data == null && isHydrated) {
+      fetcher.load('/pages/announcement-bar');
+    }
+  }, [fetcher, isHydrated]);
+  // console.log(fetcher.data);
+
+  useEffect(() => {
+    if (isHydrated) {
+      setDateValidated(fetcher.data);
+    }
+  }, [fetcher, isHydrated]);
+
+  useEffect(() => {
+    if (isHydrated) {
+      console.log(dateValidated?.page?.body);
+      let dateExtractor = new DOMParser().parseFromString(
+        dateValidated?.page?.body,
+        'text/html',
+      );
+      console.log(dateExtractor?.querySelector('span')?.innerHTML);
+      if (dateExtractor?.querySelector('span')?.innerHTML) {
+        setExtractedDate(dateExtractor?.querySelector('span')?.innerHTML);
+      }
+    }
+  }, [fetcher, dateValidated]);
+
   return (
     <>
       {/* Added AnnouncementBar component */}
-      <AnnouncementBar />
+      <AnnouncementBar extractedDate={extractedDate} />
       <header
         role="banner"
         className={`${
@@ -439,3 +472,13 @@ function FooterMenu({menu}) {
     </>
   );
 }
+
+// NOTES:
+
+// Added AnnouncementBar component
+// This comp is used for client promotion
+
+// Added useFetcher for AnnouncementBar component
+// This dynamically retrieves data from the backend Shopify admin > pages > Announcement Bar
+// Pages creates a page, which creates a URL route we can retrieve data from using useFetcher
+// console.log(fetcher.data); // access to announcement-bar page data on Shopify admin
