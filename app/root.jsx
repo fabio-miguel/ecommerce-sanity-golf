@@ -25,6 +25,11 @@ import styles from './styles/app.css';
 import {DEFAULT_LOCALE, parseMenu} from './lib/utils';
 import {useAnalytics} from './hooks/useAnalytics';
 
+import swiperstyles from 'swiper/css';
+import swipernavigationstyles from 'swiper/css/navigation';
+import swiperpaginationstyles from 'swiper/css/pagination';
+import swiperscrollbarstyles from 'swiper/css/scrollbar';
+
 // This is important to avoid re-fetching root queries on sub-navigations
 export const shouldRevalidate = ({formMethod, currentUrl, nextUrl}) => {
   // revalidate when a mutation is performed e.g add to cart, login...
@@ -42,7 +47,12 @@ export const shouldRevalidate = ({formMethod, currentUrl, nextUrl}) => {
 
 export const links = () => {
   return [
+    // | Added Swiper Styles | //
+    {rel: 'stylesheet', href: swipernavigationstyles},
+    {rel: 'stylesheet', href: swiperstyles},
+    {rel: 'stylesheet', href: swiperpaginationstyles},
     {rel: 'stylesheet', href: styles},
+
     {
       rel: 'preconnect',
       href: 'https://cdn.shopify.com',

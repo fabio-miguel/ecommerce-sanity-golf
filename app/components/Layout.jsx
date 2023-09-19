@@ -221,7 +221,6 @@ function DesktopHeader({isHome, menu, openCart, title}) {
       fetcher.load('/pages/announcement-bar');
     }
   }, [fetcher, isHydrated]);
-  // console.log(fetcher.data);
 
   useEffect(() => {
     if (isHydrated) {
@@ -231,12 +230,12 @@ function DesktopHeader({isHome, menu, openCart, title}) {
 
   useEffect(() => {
     if (isHydrated) {
-      console.log(dateValidated?.page?.body);
+      // console.log(dateValidated?.page?.body);
       let dateExtractor = new DOMParser().parseFromString(
         dateValidated?.page?.body,
         'text/html',
       );
-      console.log(dateExtractor?.querySelector('span')?.innerHTML);
+      // console.log(dateExtractor?.querySelector('span')?.innerHTML);
       if (dateExtractor?.querySelector('span')?.innerHTML) {
         setExtractedDate(dateExtractor?.querySelector('span')?.innerHTML);
       }
@@ -246,7 +245,7 @@ function DesktopHeader({isHome, menu, openCart, title}) {
   return (
     <>
       {/* Added AnnouncementBar component */}
-      <AnnouncementBar extractedDate={extractedDate} />
+      {/* <AnnouncementBar extractedDate={extractedDate} /> */}
       <header
         role="banner"
         className={`${
@@ -478,7 +477,7 @@ function FooterMenu({menu}) {
 // Added AnnouncementBar component
 // This comp is used for client promotion
 
-// Added useFetcher for AnnouncementBar component
+// Added useFetcher,  for AnnouncementBar component
 // This dynamically retrieves data from the backend Shopify admin > pages > Announcement Bar
 // Pages creates a page, which creates a URL route we can retrieve data from using useFetcher
 // console.log(fetcher.data); // access to announcement-bar page data on Shopify admin

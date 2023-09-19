@@ -11,8 +11,14 @@ import {routeHeaders} from '~/data/cache';
 
 export const headers = routeHeaders;
 
-export async function loader({params, context}) {
+// | Added request arguement in LoaderArgs | //
+export async function loader({request, params, context}) {
   const {language, country} = context.storefront.i18n;
+  // | Added searchParams & tagfilter variables | //
+  const searchParams = new URLSearchParams(new URL(request.url).searchParams);
+  const tagfilter = searchParams.get(`tag`)
+    ? `tag:${searchParams.get('tag')}`
+    : `tag:Sport`;
 
   if (
     params.locale &&
@@ -22,7 +28,9 @@ export async function loader({params, context}) {
     // the the locale param must be invalid, send to the 404 page
     throw new Response(null, {status: 404});
   }
-
+  // The primary hero derived from a created collection on shopify
+  // using meta data that mathes COLLECTION_CONTENT_FRAGMENT in shopify
+  // handle can be reassigned (e.g. "hero") so long as it mathes shopify collection.
   const {shop, hero} = await context.storefront.query(HOMEPAGE_SEO_QUERY, {
     variables: {handle: 'hydrogen'},
   });
@@ -43,6 +51,8 @@ export async function loader({params, context}) {
            * into all queries. Passing them is unnecessary unless you
            * want to override them from the following default:
            */
+          // | Added tagfilter: tagfilter, | //
+          tagfilter: tagfilter,
           country,
           language,
         },
@@ -204,11 +214,12 @@ const COLLECTION_HERO_QUERY = `#graphql
   ${COLLECTION_CONTENT_FRAGMENT}
 `;
 
+// | Added $tagfilter: String! & query: $tagfilter | //
 // @see: https://shopify.dev/api/storefront/2023-07/queries/products
 export const HOMEPAGE_FEATURED_PRODUCTS_QUERY = `#graphql
-  query homepageFeaturedProducts($country: CountryCode, $language: LanguageCode)
+  query homepageFeaturedProducts($country: CountryCode, $language: LanguageCode, $tagfilter: String!)
   @inContext(country: $country, language: $language) {
-    products(first: 8) {
+    products(first: 8, query: $tagfilter) {
       nodes {
         ...ProductCard
       }

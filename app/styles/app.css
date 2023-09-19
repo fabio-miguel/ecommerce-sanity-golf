@@ -180,3 +180,43 @@ shop-pay-button {
     }
   }
 }
+
+/*
+* --------------------------------------------------
+* components/ProductSwimlane.jsx 
+Change Swiperjs module navigation css to arrows
+* --------------------------------------------------
+*/
+
+/* Customize Swiper navigation buttons to look like arrows */
+.swiper-button-next,
+.swiper-button-prev {
+  width: 30px;
+  height: 30px;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Arrow shape for next button */
+.swiper-button-next::after {
+  content: '▶'; /* Unicode arrow right symbol */
+  font-size: 20px;
+  color: white;
+}
+
+/* Arrow shape for prev button */
+.swiper-button-prev::after {
+  content: '◀'; /* Unicode arrow left symbol */
+  font-size: 20px;
+  color: white;
+}
+
+/* Change color on hover */
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
