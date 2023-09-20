@@ -21,9 +21,7 @@ export function Cart({layout, onClose, cart}) {
 
   return (
     <>
-      {/* Added ShippingProgressBar Comp */}
-      {/* // Supspense required to provide fallback as ShippingProgress
-      can provide null before all children have loaded.  */}
+      {/* | Added custom ShippingProgressBar Component | */}
       <Suspense fallback={<CartLoading />}>
         <Await resolve={cart?.cost?.totalAmount}>
           {(totalAmount) => {
@@ -384,3 +382,10 @@ export function CartEmpty({hidden = false, layout = 'drawer', onClose}) {
     </div>
   );
 }
+
+// NOTES:
+
+// ShippingProgressBar added:
+// Suspense is required to provide fallback as children (ShippinggProgressBar comp) can provide null
+// Await allows promise to resolve and then ShippingPorgressBar comp can work
+// Remember, cart is a JSON promise and we need this to resolve before ShippinggProgressBar comp can work

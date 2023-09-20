@@ -1,10 +1,13 @@
 import {json} from '@shopify/remix-oxygen';
-import {useLoaderData} from '@remix-run/react';
+import {useLoaderData, useNavigation} from '@remix-run/react';
 import invariant from 'tiny-invariant';
 
 import {PageHeader} from '~/components';
+import ContactForm from '~/custom_pages/ContactForm';
+
 import {routeHeaders} from '~/data/cache';
 import {seoPayload} from '~/lib/seo.server';
+import {useLocation} from 'react-use';
 
 export const headers = routeHeaders;
 
@@ -29,15 +32,26 @@ export async function loader({request, params, context}) {
 
 export default function Page() {
   const {page} = useLoaderData();
-
+  const location = useLocation();
+  const {state} = useNavigation();
   return (
     <>
-      <PageHeader heading={page.title}>
-        <div
-          dangerouslySetInnerHTML={{__html: page.body}}
-          className="prose dark:prose-invert"
-        />
-      </PageHeader>
+      {state === 'loading' ? (
+        <>
+          <h1>Loading...</h1>
+        </>
+      ) : (
+        <PageHeader heading={page.title}>
+          {location.pathname === '/pages/contact' ? (
+            <ContactForm />
+          ) : (
+            <div
+              dangerouslySetInnerHTML={{__html: page.body}}
+              className="prose dark:prose-invert"
+            />
+          )}
+        </PageHeader>
+      )}
     </>
   );
 }

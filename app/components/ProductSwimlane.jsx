@@ -37,7 +37,6 @@ export function ProductSwimlane({
     }
   }, [fetcher]);
 
-  console.log(products);
   return (
     <Section padding="y" {...props}>
       <h2 className="text-3xl text-center pt-8">{title}</h2>
