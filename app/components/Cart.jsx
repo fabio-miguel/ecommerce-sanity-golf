@@ -12,9 +12,9 @@ import {
   FeaturedProducts,
   CartLoading,
 } from '~/components';
-import {Await} from '@remix-run/react';
+// import {Await} from '@remix-run/react';
 import {getInputStyleClasses} from '~/lib/utils';
-import ShippingProgressBar from './ShippingProgressBar';
+// import ShippingProgressBar from './ShippingProgressBar';
 
 export function Cart({layout, onClose, cart}) {
   const linesCount = Boolean(cart?.lines?.edges?.length || 0);
@@ -22,14 +22,14 @@ export function Cart({layout, onClose, cart}) {
   return (
     <>
       {/* | Added custom ShippingProgressBar Component | */}
-      <Suspense fallback={<CartLoading />}>
+      {/* <Suspense fallback={<CartLoading />}>
         <Await resolve={cart?.cost?.totalAmount}>
           {(totalAmount) => {
             return <ShippingProgressBar totalAmount={totalAmount} />;
           }}
           <ShippingProgressBar totalAmount={cart?.cost?.totalAmount} />
         </Await>
-      </Suspense>
+      </Suspense> */}
 
       <CartEmpty hidden={linesCount} onClose={onClose} layout={layout} />
       <CartDetails cart={cart} layout={layout} />

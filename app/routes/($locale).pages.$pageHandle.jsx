@@ -9,6 +9,17 @@ import {routeHeaders} from '~/data/cache';
 import {seoPayload} from '~/lib/seo.server';
 import {useLocation} from 'react-use';
 
+import {client} from '~/lib/sanity/sanity';
+import imageUrlBuilder from '@sanity/image-url';
+import About from '~/custom_pages/About';
+import Contact from '~/custom_pages/Contact';
+
+const builder = imageUrlBuilder(client);
+
+function urlFor(source) {
+  return builder.image(source);
+}
+
 export const headers = routeHeaders;
 
 export async function loader({request, params, context}) {
@@ -25,32 +36,45 @@ export async function loader({request, params, context}) {
     throw new Response(null, {status: 404});
   }
 
+  // Sanity query for all schema on home
+  const query = `*[_type == 'page']`;
+  const pageContentSanity = await client.fetch(query);
+
+  // console.log(pageContentSanity[0].hero.content[0].image.asset._ref);
+
   const seo = seoPayload.page({page, url: request.url});
 
-  return json({page, seo});
+  return json({page, seo, pageContentSanity});
 }
 
 export default function Page() {
-  const {page} = useLoaderData();
+  const {page, pageContentSanity} = useLoaderData();
   const location = useLocation();
   const {state} = useNavigation();
+  const isAboutPage = location.pathname === '/pages/about';
+  const isContactPage = location.pathname === '/pages/contact';
+  // console.log(pageContentSanity);
   return (
     <>
       {state === 'loading' ? (
-        <>
-          <h1>Loading...</h1>
-        </>
+        <div></div>
       ) : (
-        <PageHeader heading={page.title}>
-          {location.pathname === '/pages/contact' ? (
-            <ContactForm />
-          ) : (
-            <div
-              dangerouslySetInnerHTML={{__html: page.body}}
-              className="prose dark:prose-invert"
-            />
-          )}
-        </PageHeader>
+        <>
+          {/* <PageHeader heading={isAboutPage ? 'About' : page.title}></PageHeader> */}
+          <div className="w-full">
+            {isAboutPage ? (
+              <About data={pageContentSanity} />
+            ) : isContactPage ? (
+              // <ContactForm />
+              <Contact data={pageContentSanity} />
+            ) : (
+              <div
+                dangerouslySetInnerHTML={{__html: page.body}}
+                className="prose dark:prose-invert"
+              />
+            )}
+          </div>
+        </>
       )}
     </>
   );

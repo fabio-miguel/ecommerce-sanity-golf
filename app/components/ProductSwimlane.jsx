@@ -63,24 +63,30 @@ export function ProductSwimlane({
           Accessory
         </button>
       </div>
-      {/* | Added Swiper module  | */}
+      {/* Added Swiper module  */}
       <Swiper
         modules={[Navigation, Pagination, Scrollbar, A11y]}
-        spaceBetween={5}
-        slidesPerView={4}
+        spaceBetween={20}
+        slidesPerView={1}
+        breakpoints={{
+          768: {
+            slidesPerView: 2,
+            spaceBetween: 30,
+          },
+          992: {
+            slidesPerView: 4,
+            spaceBetween: 40,
+          },
+        }}
         navigation
         pagination={{clickable: true}}
-        onSlideChange={() => console.log('slide change')}
-        onSwiper={(swiper) => console.log(swiper)}
         className="swimlane hiddenScroll md:pb-8 md:scroll-px-8 lg:scroll-px-12 md:px-8 lg:px-12"
       >
         {productsCategory.map((product) => (
           <SwiperSlide key={`swiperslider-${product.id}`}>
-            <ProductCard
-              product={product}
-              key={product.id}
-              className="snap-start w-80"
-            />
+            <div className="w-full max-w-80 mx-auto ">
+              <ProductCard product={product} key={product.id} />
+            </div>
           </SwiperSlide>
         ))}
       </Swiper>

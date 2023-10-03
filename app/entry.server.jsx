@@ -1,7 +1,8 @@
 import {RemixServer} from '@remix-run/react';
+import {EntryContext} from '@shopify/remix-oxygen';
 import isbot from 'isbot';
 import {renderToReadableStream} from 'react-dom/server';
-import {createContentSecurityPolicy} from '@shopify/hydrogen';
+import {generateNonce, NonceProvider} from '~/lib/nonce';
 
 export default async function handleRequest(
   request,
@@ -9,17 +10,25 @@ export default async function handleRequest(
   responseHeaders,
   remixContext,
 ) {
-  const {nonce, header, NonceProvider} = createContentSecurityPolicy();
+  let nonce; // You can specify the type if needed: string | undefined
+  if (process.env.NODE_ENV === 'production') {
+    nonce = generateNonce();
+    // You can uncomment the following lines when needed
+    // responseHeaders.set(
+    //   'Content-Security-Policy',
+    //   `script-src 'nonce-${nonce}' 'strict-dynamic' cdn.shopify.com; object-src 'none'; base-uri 'none';`
+    // );
+  }
+
   const body = await renderToReadableStream(
-    <NonceProvider>
+    <NonceProvider value={nonce}>
       <RemixServer context={remixContext} url={request.url} />
     </NonceProvider>,
     {
       nonce,
       signal: request.signal,
       onError(error) {
-        // eslint-disable-next-line no-console
-        console.error(error);
+        console.error(error); // eslint-disable-line no-console
         responseStatusCode = 500;
       },
     },
@@ -30,7 +39,6 @@ export default async function handleRequest(
   }
 
   responseHeaders.set('Content-Type', 'text/html');
-  responseHeaders.set('Content-Security-Policy', header);
   return new Response(body, {
     headers: responseHeaders,
     status: responseStatusCode,

@@ -24,7 +24,9 @@ import {
 import {useIsHomePath} from '~/lib/utils';
 import {useIsHydrated} from '~/hooks/useIsHydrated';
 import {useCartFetchers} from '~/hooks/useCartFetchers';
+
 import AnnouncementBar from './AnnouncementBar';
+import Newsletter from '~/components/Newsletter';
 
 export function Layout({children, layout}) {
   const {headerMenu, footerMenu} = layout;
@@ -192,7 +194,7 @@ function MobileHeader({title, isHome, openCart, openMenu}) {
         to="/"
       >
         <Heading
-          className="font-bold text-center leading-none"
+          className="font-bold text-center leading-none uppercase text-xl"
           as={isHome ? 'h1' : 'h2'}
         >
           {title}
@@ -249,18 +251,20 @@ function DesktopHeader({isHome, menu, openCart, title}) {
       <header
         role="banner"
         className={`${
-          isHome
-            ? 'bg-primary/80 dark:bg-contrast/60 text-contrast dark:text-primary shadow-darkHeader'
-            : 'bg-contrast/80 text-primary'
+          isHome ? 'shadow-lightHeader bg-white' : 'bg-contrast/80 text-primary'
         } ${
           !isHome && y > 50 && ' shadow-lightHeader'
         } hidden h-nav lg:flex items-center sticky transition duration-300 backdrop-blur-lg z-40 top-0 justify-between w-full leading-none gap-8 px-12 py-8`}
       >
         <div className="flex gap-12">
-          <Link className="font-bold" to="/" prefetch="intent">
+          <Link
+            className="font-bold uppercase text-2xl"
+            to="/"
+            prefetch="intent"
+          >
             {title}
           </Link>
-          <nav className="flex gap-8">
+          <nav className="uppercase font-medium text-sm flex gap-8">
             {/* Top level menu items */}
             {(menu?.items || []).map((item) => (
               <Link
@@ -392,16 +396,22 @@ function Footer({menu}) {
       divider={isHome ? 'none' : 'top'}
       as="footer"
       role="contentinfo"
-      className={`grid min-h-[25rem] items-start grid-flow-row w-full gap-6 py-8 px-6 md:px-8 lg:px-12 md:gap-8 lg:gap-12 grid-cols-1 md:grid-cols-2 lg:grid-cols-${itemsCount}
-        bg-primary dark:bg-contrast dark:text-primary text-contrast overflow-hidden`}
+      className={`grid min-h-[25rem] items-start grid-flow-row w-full gap-6 py-8 px-6 md:px-8 lg:px-12 md:gap-8 lg:gap-12 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 bg-primary dark:bg-contrast dark:text-primary text-contrast overflow-hidden`}
     >
-      <FooterMenu menu={menu} />
-      <CountrySelector />
-      <div
-        className={`self-end pt-8 opacity-50 md:col-span-2 lg:col-span-${itemsCount}`}
-      >
-        &copy; {new Date().getFullYear()} / Shopify, Inc. Hydrogen is an MIT
-        Licensed Open Source project.
+      <div className="flex-col grid-rows-2 max-w-5xl ">
+        <div className="col-span-1 ">
+          <Newsletter />
+        </div>
+        <div className="col-span-1">
+          <CountrySelector />
+        </div>
+      </div>
+
+      <div className="col-span-1 self-end pt-8 opacity-20">
+        Disclaimer: This site does NOT sell nor profit from any of these
+        products listed. These are just for demonstration purposes.
+        Acknowledgments: Thanks to ManorsGolf for the awesome products and site
+        inspiration.
       </div>
     </Section>
   );
@@ -471,13 +481,3 @@ function FooterMenu({menu}) {
     </>
   );
 }
-
-// NOTES:
-
-// Added AnnouncementBar component
-// This comp is used for client promotion
-
-// Added useFetcher,  for AnnouncementBar component
-// This dynamically retrieves data from the backend Shopify admin > pages > Announcement Bar
-// Pages creates a page, which creates a URL route we can retrieve data from using useFetcher
-// console.log(fetcher.data); // access to announcement-bar page data on Shopify admin

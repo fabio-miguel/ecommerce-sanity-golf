@@ -1,25 +1,40 @@
-import {defer} from '@shopify/remix-oxygen';
+import {defer, json} from '@shopify/remix-oxygen';
 import {Suspense} from 'react';
 import {Await, useLoaderData} from '@remix-run/react';
 import {AnalyticsPageType} from '@shopify/hydrogen';
 
-import {ProductSwimlane, FeaturedCollections, Hero} from '~/components';
+import {ProductSwimlane, FeaturedCollections, Hero, Link} from '~/components';
 import {MEDIA_FRAGMENT, PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 import {getHeroPlaceholder} from '~/lib/placeholders';
 import {seoPayload} from '~/lib/seo.server';
 import {routeHeaders} from '~/data/cache';
 
+import {client} from '~/lib/sanity/sanity';
+import imageUrlBuilder from '@sanity/image-url';
+
 export const headers = routeHeaders;
 
-// | Added request arguement in LoaderArgs | //
+const builder = imageUrlBuilder(client);
+
+function urlFor(source) {
+  return builder.image(source);
+}
+
+// Request arguement in LoaderArgs for filetering on featuredProducts
 export async function loader({request, params, context}) {
   const {language, country} = context.storefront.i18n;
-  // | Added searchParams & tagfilter variables | //
+
+  // Sanity query for all schema on home
+  const query = `*[_type == 'home']`;
+  const homeContent = await client.fetch(query);
+
+  // Filtering variables for featuredProducts
   const searchParams = new URLSearchParams(new URL(request.url).searchParams);
   const tagfilter = searchParams.get(`tag`)
     ? `tag:${searchParams.get('tag')}`
     : `tag:Sport`;
 
+  // Default Hydrogen Logic
   if (
     params.locale &&
     params.locale.toLowerCase() !== `${language}-${country}`.toLowerCase()
@@ -32,7 +47,7 @@ export async function loader({request, params, context}) {
   // using meta data that mathes COLLECTION_CONTENT_FRAGMENT in shopify
   // handle can be reassigned (e.g. "hero") so long as it mathes shopify collection.
   const {shop, hero} = await context.storefront.query(HOMEPAGE_SEO_QUERY, {
-    variables: {handle: 'hydrogen'},
+    variables: {handle: 'featured'},
   });
 
   const seo = seoPayload.home();
@@ -82,6 +97,7 @@ export async function loader({request, params, context}) {
       pageType: AnalyticsPageType.home,
     },
     seo,
+    homeContent,
   });
 }
 
@@ -92,16 +108,71 @@ export default function Homepage() {
     tertiaryHero,
     featuredCollections,
     featuredProducts,
+    homeContent,
   } = useLoaderData();
 
   // TODO: skeletons vs placeholders
   const skeletons = getHeroPlaceholder([{}, {}, {}]);
+  // console.log(homeContent);
+  // console.log(homeContent[0].modules[0].content[0].asset._ref);
 
   return (
     <>
       {primaryHero && (
         <Hero {...primaryHero} height="full" top loading="eager" />
       )}
+      {featuredCollections && (
+        <Suspense>
+          <Await resolve={featuredCollections}>
+            {({collections}) => {
+              if (!collections?.nodes) return <></>;
+              return (
+                <FeaturedCollections
+                  collections={collections}
+                  title="Categories"
+                />
+              );
+            }}
+          </Await>
+        </Suspense>
+      )}
+      {/* assets from sanity here: */}
+
+      <section className="relative flex w-full flex-col h-screen md:h-screen justify-center md:justify-end ">
+        <div className="absolute inset-0 overflow-clip h-auto">
+          <img
+            src={urlFor(
+              `${homeContent[0].modules[0].content[0].asset._ref}`,
+            ).url()}
+            alt="Test"
+            style={{
+              inset: '0px',
+              height: '100%',
+              objectFit: 'cover',
+              position: 'absolute',
+              width: '100%',
+            }}
+            className="w-full h-auto"
+          />
+        </div>
+        <div className="section-px z-10 py-10 h-screen-nav-half md:h-screen-nav flex items-center bg-gradient-to-t from-dark/30 to-dark/30 md:h-auto md:items-end md:from-dark/40 md:to-transparent">
+          <div className="mx-auto flex w-full max-w-site flex-col-reverse gap-8 space-y-8 md:flex-col md:gap-0">
+            <div className="mx-auto flex w-full max-w-site flex-col items-center gap-7 px-4 md:flex-row md:items-end md:justify-between md:border-b md:border-white/50 md:pb-8">
+              <div className="flex flex-col gap-15 text-center md:text-left">
+                <h2 className="text-white mx-auto max-w-[75%] uppercase font-bold md:mx-0 text-5xl">
+                  {homeContent[0].modules[0].body}
+                </h2>
+              </div>
+              <Link
+                to="/pages/about"
+                className="flex justify-center gap-2 items-center rounded-3xl uppercase text-button text-center py-3 px-6  xs:py-4 xs:px-8 hover:roll-activate focus:roll-activate disabled:text-opacity-50 group whitespace-nowrap bg-white text-dark w-auto"
+              >
+                {homeContent[0].modules[0].title}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {featuredProducts && (
         <Suspense>
@@ -119,7 +190,6 @@ export default function Homepage() {
           </Await>
         </Suspense>
       )}
-
       {secondaryHero && (
         <Suspense fallback={<Hero {...skeletons[1]} />}>
           <Await resolve={secondaryHero}>
@@ -130,23 +200,6 @@ export default function Homepage() {
           </Await>
         </Suspense>
       )}
-
-      {featuredCollections && (
-        <Suspense>
-          <Await resolve={featuredCollections}>
-            {({collections}) => {
-              if (!collections?.nodes) return <></>;
-              return (
-                <FeaturedCollections
-                  collections={collections}
-                  title="Collections"
-                />
-              );
-            }}
-          </Await>
-        </Suspense>
-      )}
-
       {tertiaryHero && (
         <Suspense fallback={<Hero {...skeletons[2]} />}>
           <Await resolve={tertiaryHero}>

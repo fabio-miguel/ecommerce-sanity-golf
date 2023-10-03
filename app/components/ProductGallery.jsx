@@ -1,9 +1,9 @@
-import {Image} from '@shopify/hydrogen';
+import {Image, Video} from '@shopify/hydrogen';
 
-/**
- * A client component that defines a media gallery for hosting images, 3D models, and videos of products
- */
+//  * A client component that defines a media gallery for hosting images, 3D models, and videos of products
+
 export function ProductGallery({media, className}) {
+  console.log(media);
   if (!media.length) {
     return null;
   }
@@ -22,14 +22,23 @@ export function ProductGallery({media, className}) {
             ? {...med.image, altText: med.alt || 'Product image'}
             : null;
 
+        const video =
+          med.__typename === 'Video'
+            ? {
+                sources: med.sources,
+                altText: med.alt || 'Product video',
+                previewImage: med.previewImage,
+              }
+            : null;
+
         const style = [
           isFullWidth ? 'md:col-span-2' : 'md:col-span-1',
           isFirst || isFourth ? '' : 'md:aspect-[4/5]',
-          'aspect-square snap-center card-image bg-white dark:bg-contrast/10 w-mobileGallery md:w-full',
+          'aspect-square snap-center card-image bg-transparent dark:bg-contrast/10 w-mobileGallery md:w-full',
         ].join(' ');
 
         return (
-          <div className={style} key={med.id || image?.id}>
+          <div className={`${style} border-none`} key={med.id || image?.id}>
             {image && (
               <Image
                 loading={i === 0 ? 'eager' : 'lazy'}
@@ -42,6 +51,20 @@ export function ProductGallery({media, className}) {
                 }
                 className="object-cover w-full h-full aspect-square fadeIn"
               />
+            )}
+
+            {video && (
+              <div className="aspect-square">
+                <Video
+                  data={video}
+                  className="object-cover w-full h-full"
+                  // Adjust other video props as needed
+                  autoPlay
+                  loop
+                  muted
+                  controls={false}
+                />
+              </div>
             )}
           </div>
         );
