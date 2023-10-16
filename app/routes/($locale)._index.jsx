@@ -24,6 +24,8 @@ function urlFor(source) {
 export async function loader({request, params, context}) {
   const {language, country} = context.storefront.i18n;
 
+  console.log(context);
+
   // Sanity query for all schema on home
   const query = `*[_type == 'home']`;
   const homeContent = await client.fetch(query);

@@ -15,6 +15,8 @@ import {
 import {HydrogenSession} from '~/lib/session.server';
 import {getLocaleFromRequest} from '~/lib/utils';
 
+import {createClient} from '@sanity/client';
+
 /**
  * Export a fetch handler in module format.
  */
@@ -55,6 +57,17 @@ export default {
       });
 
       /**
+       * Create Sanity client.
+       */
+
+      const sanity = createClient({
+        projectId: env.SANITY_PROJECT_ID,
+        dataset: env.SANITY_DATASET,
+        apiVersion: env.SANITY_API_VERSION ?? '2023-03-30',
+        useCdn: process.env.NODE_ENV === 'production',
+      });
+
+      /**
        * Create a Remix request handler and pass
        * Hydrogen's Storefront client to the loader context.
        */
@@ -67,6 +80,7 @@ export default {
           storefront,
           cart,
           env,
+          sanity,
         }),
       });
 
