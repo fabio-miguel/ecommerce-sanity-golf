@@ -37,10 +37,7 @@ export async function loader({request, params, context}) {
   }
 
   // Sanity query for all schema on home
-  const query = `*[_type == 'page']`;
-  const pageContentSanity = await client.fetch(query);
-
-  // console.log(pageContentSanity[0].hero.content[0].image.asset._ref);
+  const pageContentSanity = await context.sanity.fetch(`*[_type == 'page']`); // Sanity data from homepage
 
   const seo = seoPayload.page({page, url: request.url});
 
