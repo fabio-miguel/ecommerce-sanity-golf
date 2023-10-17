@@ -9,12 +9,12 @@ import {getHeroPlaceholder} from '~/lib/placeholders';
 import {seoPayload} from '~/lib/seo.server';
 import {routeHeaders} from '~/data/cache';
 
-import {client} from '~/lib/sanity/sanity';
 import imageUrlBuilder from '@sanity/image-url';
-
-export const headers = routeHeaders;
+import {client} from '~/lib/sanity/sanity';
 
 const builder = imageUrlBuilder(client);
+
+export const headers = routeHeaders;
 
 function urlFor(source) {
   return builder.image(source);
@@ -24,12 +24,9 @@ function urlFor(source) {
 export async function loader({request, params, context}) {
   const {language, country} = context.storefront.i18n;
 
-  console.log(context);
+  const homepage = await context.sanity.fetch(`*[_type == "home"]`); // Sanity data from homepage
 
-  // Sanity query for all schema on home
-  const query = `*[_type == 'home']`;
-  const homeContent = await client.fetch(query);
-
+  console.log(homepage);
   // Filtering variables for featuredProducts
   const searchParams = new URLSearchParams(new URL(request.url).searchParams);
   const tagfilter = searchParams.get(`tag`)
@@ -99,7 +96,7 @@ export async function loader({request, params, context}) {
       pageType: AnalyticsPageType.home,
     },
     seo,
-    homeContent,
+    homepage,
   });
 }
 
@@ -110,7 +107,7 @@ export default function Homepage() {
     tertiaryHero,
     featuredCollections,
     featuredProducts,
-    homeContent,
+    homepage,
   } = useLoaderData();
 
   // TODO: skeletons vs placeholders
@@ -144,7 +141,7 @@ export default function Homepage() {
         <div className="absolute inset-0 overflow-clip h-auto">
           <img
             src={urlFor(
-              `${homeContent[0].modules[0].content[0].asset._ref}`,
+              `${homepage[0].modules[0].content[0].asset._ref}`,
             ).url()}
             alt="Test"
             style={{
@@ -162,14 +159,14 @@ export default function Homepage() {
             <div className="mx-auto flex w-full max-w-site flex-col items-center gap-7 px-4 md:flex-row md:items-end md:justify-between md:border-b md:border-white/50 md:pb-8">
               <div className="flex flex-col gap-15 text-center md:text-left">
                 <h2 className="text-white mx-auto max-w-[75%] uppercase font-bold md:mx-0 text-5xl">
-                  {homeContent[0].modules[0].body}
+                  {homepage[0].modules[0].body}
                 </h2>
               </div>
               <Link
                 to="/pages/about"
                 className="flex justify-center gap-2 items-center rounded-3xl uppercase text-button text-center py-3 px-6  xs:py-4 xs:px-8 hover:roll-activate focus:roll-activate disabled:text-opacity-50 group whitespace-nowrap bg-white text-dark w-auto"
               >
-                {homeContent[0].modules[0].title}
+                {homepage[0].modules[0].title}
               </Link>
             </div>
           </div>
