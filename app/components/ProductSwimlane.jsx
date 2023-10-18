@@ -42,25 +42,25 @@ export function ProductSwimlane({
       <h2 className="text-3xl text-center pt-8">{title}</h2>
       <div className="flex gap-5 justify-center mt-5 mb-8 collection-category">
         <button
-          className="text-3xl font-light tracking-wide uppercase underline-offset-8"
+          className="text-base font-light tracking-wide uppercase underline-offset-8"
           data-tag="Premium"
           onClick={setParamTag}
         >
           Premium
         </button>
         <button
-          className="text-3xl font-light tracking-wide uppercase underline-offset-8"
+          className="text-base font-light tracking-wide uppercase underline-offset-8"
           data-tag="Sport"
           onClick={setParamTag}
         >
           Sport
         </button>
         <button
-          className="text-3xl font-light tracking-wide uppercase underline-offset-8"
+          className="text-base font-light tracking-wide uppercase underline-offset-8"
           data-tag="Accessory"
           onClick={setParamTag}
         >
-          Accessory
+          New
         </button>
       </div>
       {/* Added Swiper module  */}

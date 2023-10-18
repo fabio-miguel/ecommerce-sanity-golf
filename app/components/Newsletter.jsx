@@ -23,7 +23,7 @@ const Newsletter = () => {
                 <span className="block roll">Subscribe</span>
               </button>
             </div>
-            <p className="text-p1 text-sm text-gray-400 text-web">
+            <p className="text-p1 text-xs text-gray-400 text-web p-4">
               By subscribing you agree to the ___ Privacy Policy and Terms of
               Serivce apply.
             </p>

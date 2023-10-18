@@ -197,7 +197,8 @@ function MobileHeader({title, isHome, openCart, openMenu}) {
           className="font-bold text-center leading-none uppercase text-xl"
           as={isHome ? 'h1' : 'h2'}
         >
-          {title}
+          {/* {title} */}
+          CONCEPT
         </Heading>
       </Link>
 
