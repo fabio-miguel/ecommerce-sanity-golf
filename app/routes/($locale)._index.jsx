@@ -12,6 +12,9 @@ import {routeHeaders} from '~/data/cache';
 import imageUrlBuilder from '@sanity/image-url';
 import {client} from '~/lib/sanity/sanity';
 
+import bg2 from '~/images/background-2.webp';
+import swingImg from '~/images/swing-section.webp';
+
 const builder = imageUrlBuilder(client);
 
 export const headers = routeHeaders;
@@ -26,7 +29,6 @@ export async function loader({request, params, context}) {
 
   const homepage = await context.sanity.fetch(`*[_type == "home"]`); // Sanity data from homepage
 
-  console.log(homepage);
   // Filtering variables for featuredProducts
   const searchParams = new URLSearchParams(new URL(request.url).searchParams);
   const tagfilter = searchParams.get(`tag`)
@@ -189,7 +191,57 @@ export default function Homepage() {
           </Await>
         </Suspense>
       )}
-      {secondaryHero && (
+
+      <section className="relative flex w-full flex-col justify-end">
+        <div className="z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2">
+            <div className="flex flex-col gap-4">
+              <div
+                className="relative flex aspect-square w-full flex-col justify-end"
+                style={{
+                  background: 'rgb(35, 42, 34)',
+                  color: 'rgb(255, 255, 255)',
+                }}
+              >
+                <div className="absolute inset-0 overflow-clip">
+                  <img src={bg2} alt="background layer" />
+                </div>
+                <div className="mr-0 flex max-w-siteHalf flex-col items-start justify-between gap-10">
+                  <div className="flex flex-col gap-10 after:h-[2px] after:w-20 after:bg-offWhite/60 text-center">
+                    <h2 className="whitespace-pre-wrap max-w-prose font-bold text-d5 uppercase text-silk text-3xl z-10">
+                      Nirvana can be found in any given shot, and you never
+                      know, it might be the next one you hit.
+                    </h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <div className="relative flex aspect-square w-full flex-col md:aspect-auto md:h-full">
+                <div className="relative flex h-full w-full">
+                  <div className="absolute inset-0 h-full w-full overflow-clip">
+                    <img
+                      src={swingImg}
+                      alt=""
+                      className="z-10"
+                      style={{
+                        inset: '0px',
+                        height: '100%',
+                        objectFit: 'cover',
+                        position: 'absolute',
+                        width: '100%',
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* {secondaryHero && (
         <Suspense fallback={<Hero {...skeletons[1]} />}>
           <Await resolve={secondaryHero}>
             {({hero}) => {
@@ -208,7 +260,7 @@ export default function Homepage() {
             }}
           </Await>
         </Suspense>
-      )}
+      )} */}
     </>
   );
 }

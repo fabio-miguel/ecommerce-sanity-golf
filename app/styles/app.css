@@ -221,3 +221,16 @@ Change Swiperjs module navigation css to arrows
 .swiper-button-prev:hover {
   background-color: rgba(0, 0, 0, 0.8);
 }
+
+.logo {
+  max-width: 5rem;
+  overflow: hidden;
+}
+
+.your-next-button-selector {
+  background-color: red;
+}
+
+.text-silk {
+  color: rgb(var(--color-bleached-silk) / var(--tw-text-opacity));
+}

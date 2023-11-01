@@ -27,6 +27,7 @@ import {useCartFetchers} from '~/hooks/useCartFetchers';
 
 import AnnouncementBar from './AnnouncementBar';
 import Newsletter from '~/components/Newsletter';
+import LogoImg from '~/images/manors-golf-illustration.webp';
 
 export function Layout({children, layout}) {
   const {headerMenu, footerMenu} = layout;
@@ -263,9 +264,10 @@ function DesktopHeader({isHome, menu, openCart, title}) {
             to="/"
             prefetch="intent"
           >
-            {title}
+            {/* {title} */}
+            <img src={LogoImg} alt="logo" className="object-contain logo" />
           </Link>
-          <nav className="uppercase font-medium text-sm flex gap-8">
+          <nav className="uppercase font-medium text-sm flex justify-center items-center gap-8">
             {/* Top level menu items */}
             {(menu?.items || []).map((item) => (
               <Link
@@ -408,11 +410,21 @@ function Footer({menu}) {
         </div>
       </div>
 
-      <div className="col-span-1 self-end pt-8 opacity-20">
-        Disclaimer: This site does NOT sell nor profit from any of these
-        products listed. These are just for demonstration purposes.
-        Acknowledgments: Thanks to ManorsGolf for the awesome products and site
-        inspiration.
+      <div className="col-span-1 self-end pt-8 opacity-50">
+        Disclaimer: THIS IS A CONCEPT WEBSITE. PRODUCTS ON THIS WEBSITE ARE NOT
+        FOR SALE. THIS WEBSITE WAS CREATED FOR CREATIVE PURPOSES ONLY. SOME
+        LINKS HAVE MINIMAL PRODUCT RETURNS AS THEY ARE FOR DEMONSTRATIION
+        PURPOSES ONLY. SOME STYLES HAVE BEEN MINIMISED FOR THE PURPOSES OF
+        GREATER INTERPRETATION. ALL STYLES ARE ADAPTABLE AND ADDITIONAL STYLES
+        POSSIBLE.
+        <p className="text-xs font-light no-underline leading-7 tracking-wider text-white">
+          Created by Fabio Miguel - Web Developer
+        </p>
+        <a href="https://fabiomiguel.com/." target="_blank" rel="noreferrer">
+          <p className="text-xs font-light no-underline leading-7 tracking-wider text-green-500 opacity-100">
+            fabiomiguel.com
+          </p>
+        </a>
       </div>
     </Section>
   );

@@ -6,7 +6,7 @@ const Newsletter = () => {
       </h3>
       <form action="#">
         <div className="flex flex-col gap-3">
-          <div className="flex flex-col items-center gap-2 xs:flex-row xs:gap-1">
+          <div className="flex flex-col  gap-2 xs:flex-row xs:gap-1">
             <div className=" flex gap-1 relative lg:w-full">
               <input
                 type="email"
@@ -23,8 +23,8 @@ const Newsletter = () => {
                 <span className="block roll">Subscribe</span>
               </button>
             </div>
-            <p className="text-p1 text-xs text-gray-400 text-web p-4">
-              By subscribing you agree to the ___ Privacy Policy and Terms of
+            <p className="text-p1 text-xs text-gray-400 text-web p-4 ">
+              By subscribing you agree to the Privacy Policy and Terms of
               Serivce apply.
             </p>
           </div>

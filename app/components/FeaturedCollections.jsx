@@ -12,7 +12,7 @@ export function FeaturedCollections({
   const collectionsWithImage = collections.nodes.filter((item) => item.image);
 
   return (
-    <Section {...props} heading={title}>
+    <Section {...props} heading={title} className="text-lg">
       <Grid items={collectionsWithImage.length}>
         {collectionsWithImage.map((collection) => {
           return (
@@ -28,7 +28,9 @@ export function FeaturedCollections({
                     />
                   )}
                 </div>
-                <Heading size="copy">{collection.title}</Heading>
+                <Heading size="copy" className="text-lg">
+                  {collection.title}
+                </Heading>
               </div>
             </Link>
           );
