@@ -3,7 +3,7 @@ import {Image, Video} from '@shopify/hydrogen';
 //  * A client component that defines a media gallery for hosting images, 3D models, and videos of products
 
 export function ProductGallery({media, className}) {
-  console.log(media);
+  // console.log(media);
   if (!media.length) {
     return null;
   }

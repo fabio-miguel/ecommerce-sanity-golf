@@ -39,7 +39,9 @@ export function ProductSwimlane({
 
   return (
     <Section padding="y" {...props}>
-      <h2 className="text-2xl font-semibold text-center pt-8">{title}</h2>
+      <h2 className="text-2xl font-semibold text-center pt-8 lg:mt-8">
+        {title}
+      </h2>
       <div className="flex gap-5 justify-center mt-5 mb-8 collection-category">
         <button
           className="text-base font-light tracking-wide uppercase underline-offset-8"

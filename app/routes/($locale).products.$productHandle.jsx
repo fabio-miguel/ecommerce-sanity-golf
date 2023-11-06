@@ -1,4 +1,4 @@
-import {useRef, Suspense} from 'react';
+import {useRef, Suspense, useState} from 'react';
 import {Disclosure, Listbox} from '@headlessui/react';
 import {defer, redirect} from '@shopify/remix-oxygen';
 import {useLoaderData, Await} from '@remix-run/react';
@@ -8,6 +8,7 @@ import {
   ShopPayButton,
   VariantSelector,
   getSelectedProductOptions,
+  Image,
 } from '@shopify/hydrogen';
 import invariant from 'tiny-invariant';
 import clsx from 'clsx';
@@ -30,11 +31,44 @@ import {seoPayload} from '~/lib/seo.server';
 import {routeHeaders} from '~/data/cache';
 import {MEDIA_FRAGMENT, PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 
+import imageUrlBuilder from '@sanity/image-url';
+import {client} from '~/lib/sanity/sanity';
+
+const builder = imageUrlBuilder(client);
+
+function urlFor(source) {
+  return builder.image(source);
+}
+
 export const headers = routeHeaders;
 
 export async function loader({params, request, context}) {
   const {productHandle} = params;
   invariant(productHandle, 'Missing productHandle param, check route filename');
+
+  // Fetch all the products from Sanity
+  const allSanityProducts = await context.sanity.fetch('*[_type == "product"]');
+
+  // Find the product that matches the given handle
+  const sanityProduct = allSanityProducts.find((sanityProduct) => {
+    return sanityProduct.store?.slug?.current === productHandle;
+  });
+
+  // Extract the references from productsforcompletethelook for Complete The Look section
+  const completethelookReferences =
+    sanityProduct.completethelook.productsforcompletethelook;
+  const referencedProducts = completethelookReferences.map(
+    (reference) => reference.product._ref,
+  );
+
+  // Find the matching products in allSanityProducts
+  const matchingProducts = allSanityProducts.filter((product) =>
+    referencedProducts.includes(product._id),
+  );
+
+  // Now, matchingProducts contains the products referenced in productsforcompletethelook
+
+  console.log(matchingProducts);
 
   const selectedOptions = getSelectedProductOptions(request);
 
@@ -103,6 +137,8 @@ export async function loader({params, request, context}) {
       totalValue: parseFloat(selectedVariant.price.amount),
     },
     seo,
+    sanityProduct,
+    matchingProducts,
   });
 }
 
@@ -117,9 +153,37 @@ function redirectToFirstVariant({product, request}) {
 }
 
 export default function Product() {
-  const {product, shop, recommended, variants} = useLoaderData();
+  const {
+    product,
+    shop,
+    recommended,
+    variants,
+    sanityProduct,
+    matchingProducts,
+  } = useLoaderData();
   const {media, title, vendor, descriptionHtml} = product;
   const {shippingPolicy, refundPolicy} = shop;
+
+  const [isDescriptionVisible1, setIsDescriptionVisible1] = useState(false);
+  const [isDescriptionVisible2, setIsDescriptionVisible2] = useState(false);
+  const [isDescriptionVisible3, setIsDescriptionVisible3] = useState(false);
+
+  const toggleDescription = (buttonNumber) => {
+    switch (buttonNumber) {
+      case 1:
+        setIsDescriptionVisible1(!isDescriptionVisible1);
+        break;
+      case 2:
+        setIsDescriptionVisible2(!isDescriptionVisible2);
+        break;
+      case 3:
+        setIsDescriptionVisible3(!isDescriptionVisible3);
+        break;
+
+      default:
+        break;
+    }
+  };
 
   return (
     <>
@@ -139,6 +203,7 @@ export default function Product() {
                   <Text className={'opacity-50 font-medium'}>{vendor}</Text>
                 )}
               </div>
+              {/* Variants */}
               <Suspense fallback={<ProductForm variants={[]} />}>
                 <Await
                   errorElement="There was a problem loading related products"
@@ -151,6 +216,8 @@ export default function Product() {
                   )}
                 </Await>
               </Suspense>
+              {/* Shopify Accordion */}
+              {/* Shopify Description from Product > Description */}
               <div className="grid gap-4 py-4">
                 {descriptionHtml && (
                   <ProductDetail
@@ -158,6 +225,7 @@ export default function Product() {
                     content={descriptionHtml}
                   />
                 )}
+                {/* Shopify Shipping Policy from Settings > Policies > Shipping policy*/}
                 {shippingPolicy?.body && (
                   <ProductDetail
                     title="Shipping"
@@ -165,6 +233,7 @@ export default function Product() {
                     learnMore={`/policies/${shippingPolicy.handle}`}
                   />
                 )}
+                {/* Shopify Refund Policy from Settings > Policies > Refund policy*/}
                 {refundPolicy?.body && (
                   <ProductDetail
                     title="Returns"
@@ -177,13 +246,264 @@ export default function Product() {
           </div>
         </div>
       </Section>
+
+      {/* Sanity Storytelling */}
+      {/* Poster */}
+
+      <div className="w-full">
+        {/* Headline Description */}
+        <section className="relative my-15 flex w-full flex-col lg:my-32">
+          <div className="section-px mx-auto flex max-w-site flex-col items-center gap-5 lg:gap-8 ">
+            {sanityProduct.description_headline ? (
+              <p className="text-4xl max-w-prose-narrow text-center text-p5 lg:text-p8">
+                {sanityProduct.description_headline}
+              </p>
+            ) : null}
+          </div>
+        </section>
+
+        {/* Poster */}
+        {sanityProduct.poster ? (
+          <section className="relative flex w-full flex-col h-screen-nav-half md:h-screen-nav justify-center md:justify-end border-2">
+            <div className="absolute inset-0 overflow-clip">
+              <img
+                src={urlFor(`${sanityProduct.poster.asset._ref}`).url()}
+                alt={sanityProduct.attribution}
+                style={{
+                  inset: '0px',
+                  height: '100%',
+                  objectFit: 'cover',
+                  position: 'absolute',
+                  width: '100%',
+                }}
+                sizes="(max-width: 640px) 1000px, 2000px"
+              />
+            </div>
+          </section>
+        ) : null}
+      </div>
+
+      {/* Description and Accordion */}
+      {sanityProduct.accordion1 ? (
+        <section className="section-px my-15 lg:my-20">
+          <div className="mx-auto max-w-site">
+            <div className="grid grid-cols-6 gap-4">
+              <div className="col-span-6 md:col-span-3 md:pr-12  lg:col-span-4">
+                <div className="portable-text max-w-4xl text-lg lg:text-2xl font-normal">
+                  <p>{sanityProduct.detailed_description}</p>
+                </div>
+              </div>
+
+              <div className="col-span-6 mt-6 md:col-span-3 lg:mt-0 lg:col-span-2">
+                <div className="w-full border-b">
+                  <button
+                    className="flex-col w-full justify-between py-6"
+                    onClick={() => toggleDescription(1)}
+                  >
+                    <h3 className="text-left text-h5">
+                      {sanityProduct.accordion1.title1}
+                    </h3>
+                    {isDescriptionVisible1 && (
+                      <div className="grid gap-2 pb-6">
+                        <div className="portable-text prose-sm text-p4">
+                          <ul className="first:mt-0 last:mb-0 my-4 space-y-0.5 list-outside [&>*]:py-1 ">
+                            <li className="p-4">
+                              {sanityProduct.accordion1.description1}
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                  </button>
+                </div>
+
+                <div className="w-full border-b">
+                  <button
+                    className="flex-col w-full justify-between py-6"
+                    onClick={() => toggleDescription(2)}
+                  >
+                    <h3 className="text-left text-h5">
+                      {sanityProduct.accordion2.title2}
+                    </h3>
+                    {isDescriptionVisible2 && (
+                      <div className="grid gap-2 pb-6">
+                        <div className="portable-text prose-sm text-p4">
+                          <ul className="first:mt-0 last:mb-0 my-4 space-y-0.5 list-outside [&>*]:py-1 ">
+                            <li className="p-4">
+                              {sanityProduct.accordion2.description2}
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                  </button>
+                </div>
+
+                <div className="w-full border-b">
+                  <button
+                    className="flex-col w-full justify-between py-6"
+                    onClick={() => toggleDescription(3)}
+                  >
+                    <h3 className="text-left text-h5">
+                      {sanityProduct.accordion3.title3}
+                    </h3>
+                    {isDescriptionVisible3 && (
+                      <div className="grid gap-2 pb-6">
+                        <div className="portable-text prose-sm text-p4">
+                          <ul className="first:mt-0 last:mb-0 my-4 space-y-0.5 list-outside [&>*]:py-1 ">
+                            <li className="p-4">
+                              {sanityProduct.accordion3.description3}
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {/* Product Features */}
+      {sanityProduct.productfeatures ? (
+        <section>
+          <div className="section-px my-15 lg:my-20">
+            <div className="mx-auto max-w-site">
+              <h2 className="mb-6 text-xl font-bold lg:mb-11 lg:text-h6">
+                Product Features
+              </h2>
+              <div className="grid grid-cols-4 gap-8 lg:gap-4">
+                <div className="col-span-4 md:col-span-2 lg:col-span-1">
+                  <div className="flex flex-col gap-6">
+                    <img
+                      src={urlFor(
+                        `${sanityProduct.productfeatures.productfeaturesfirst.firstproductfeatureimg.asset._ref}`,
+                      ).url()}
+                      alt={
+                        sanityProduct.productfeatures.productfeaturesfirst
+                          .firstproductfeaturetitle
+                      }
+                    />
+                    <div className="">
+                      <h3 className="mb-2 text-base font-semibold">
+                        {
+                          sanityProduct.productfeatures.productfeaturesfirst
+                            .firstproductfeaturetitle
+                        }
+                      </h3>
+                      <div className="text-sm">
+                        <p>
+                          {
+                            sanityProduct.productfeatures.productfeaturesfirst
+                              .firstproductfeaturedescription
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-span-4 md:col-span-2 lg:col-span-1">
+                  <div className="flex flex-col gap-6">
+                    <img
+                      src={urlFor(
+                        `${sanityProduct.productfeatures.productfeaturessecond.secondproductfeatureimg.asset._ref}`,
+                      ).url()}
+                      alt="product feature image"
+                    />
+                    <div className="">
+                      <h3 className="mb-2 text-base font-semibold">
+                        {
+                          sanityProduct.productfeatures.productfeaturessecond
+                            .secondproductfeaturetitle
+                        }
+                      </h3>
+                      <div className="text-sm">
+                        <p>
+                          {
+                            sanityProduct.productfeatures.productfeaturessecond
+                              .secondproductfeaturedescription
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="section-px">
+            <hr className="mx-auto max-w-site" />
+          </div>
+        </section>
+      ) : null}
+
+      {/* Complete The Look */}
+      {sanityProduct.completethelook ? (
+        <section className="section-px my-15 lg:my-20 ">
+          <div className="mx-auto flex max-w-site flex-col border-b pb-15 lg:border-0 lg:pb-0">
+            <h2 className="mb-5 text-xl font-bold">Complete The Look</h2>
+            <div className="flex flex-col gap-5 lg:flex-row">
+              {sanityProduct.completethelook.completethelookposterimage.asset
+                ._ref ? (
+                <div className="relative pt-5 ">
+                  <div className="top-[calc(var(--height-nav)+5.2rem)] aspect-[4/5] max-h-[1150px] w-full lg:sticky lg:h-screen-no-nav lg:w-auto mb-16 ">
+                    <img
+                      src={urlFor(
+                        `${sanityProduct.completethelook.completethelookposterimage.asset._ref}`,
+                      ).url()}
+                      alt=""
+                    />
+                  </div>
+                </div>
+              ) : null}
+              <div className="swimlane hiddenScroll w-full p-0 lg:grid-flow-row lg:grid-cols-2 lg:gap-5 lg:overflow-x-auto lg:pt-5">
+                {matchingProducts
+                  ? matchingProducts.map((product) => {
+                      // console.log(product); // Log the product to the console
+                      return (
+                        <div className="flex flex-col justify-between gap-2 aspect-[4/5] w-[70vw] snap-center md:w-[50vw] lg:w-full">
+                          <Link>
+                            <div className="grid gap-4 aspect-[4/5] w-[70vw] snap-center md:w-[50vw] lg:w-full">
+                              <div className="card-image group relative aspect-[4/5]">
+                                <img
+                                  src={product.store.previewImageUrl}
+                                  alt=""
+                                />
+                              </div>
+                              <div className="grid gap-1">
+                                <h3>{product.store.title}</h3>
+                                <div className="flex gap-4">
+                                  <span className="flex gap-2 text-p3">
+                                    <div>
+                                      {`£${product.store.priceRange.maxVariantPrice}`}
+                                    </div>
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </Link>
+                        </div>
+                      );
+                    })
+                  : null}
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {/* Gallery - set up swiper for.  */}
+
+      {/* Related Products Swimlane  */}
       <Suspense fallback={<Skeleton className="h-32" />}>
         <Await
           errorElement="There was a problem loading related products"
           resolve={recommended}
         >
           {(products) => (
-            <ProductSwimlane title="Related Products" products={products} />
+            <ProductSwimlane title="Keep Exploring" products={products} />
           )}
         </Await>
       </Suspense>
@@ -231,7 +551,7 @@ export function ProductForm({variants}) {
                 <Heading as="legend" size="lead" className="min-w-[4rem]">
                   {option.name}
                 </Heading>
-                <div className="flex flex-wrap items-baseline gap-4">
+                <div className="flex flex-wrap items-baseline gap-4 ">
                   {option.values.length > 7 ? (
                     <div className="relative w-full">
                       <Listbox>
@@ -251,7 +571,7 @@ export function ProductForm({variants}) {
                             </Listbox.Button>
                             <Listbox.Options
                               className={clsx(
-                                'border-primary bg-contrast absolute bottom-12 z-30 grid h-48 w-full overflow-y-scroll rounded-t border px-2 py-2 transition-[max-height] duration-150 sm:bottom-auto md:rounded-b md:rounded-t-none md:border-t-0 md:border-b',
+                                'border-2 border-black bg-contrast absolute bottom-12 z-30 grid h-48 w-full overflow-y-scroll rounded-t px-2 py-2 transition-[max-height] duration-150 sm:bottom-auto md:rounded-b md:rounded-t-none md:border-t-0 md:border-b ',
                                 open ? 'max-h-48' : 'max-h-0',
                               )}
                             >
