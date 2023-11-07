@@ -68,7 +68,7 @@ export async function loader({params, request, context}) {
 
   // Now, matchingProducts contains the products referenced in productsforcompletethelook
 
-  console.log(matchingProducts);
+  // console.log(matchingProducts);
 
   const selectedOptions = getSelectedProductOptions(request);
 
@@ -196,11 +196,16 @@ export default function Product() {
           <div className="sticky md:-mb-nav md:top-nav md:-translate-y-nav md:h-screen md:pt-nav hiddenScroll md:overflow-y-scroll">
             <section className="flex flex-col w-full max-w-xl gap-8 p-6 md:mx-auto md:max-w-sm md:px-0">
               <div className="grid gap-2">
-                <Heading as="h1" className="whitespace-normal">
+                <Heading
+                  as="h1"
+                  className="whitespace-normal uppercase font-semibold text-4xl"
+                >
                   {title}
                 </Heading>
                 {vendor && (
-                  <Text className={'opacity-50 font-medium'}>{vendor}</Text>
+                  <Text className={'opacity-50 font-medium text-sm'}>
+                    {vendor}
+                  </Text>
                 )}
               </div>
               {/* Variants */}
@@ -652,10 +657,11 @@ export function ProductForm({variants}) {
                   products: [productAnalytics],
                   totalValue: parseFloat(productAnalytics.price),
                 }}
+                className="rounded-full"
               >
                 <Text
                   as="span"
-                  className="flex items-center justify-center gap-2"
+                  className="flex items-center justify-center gap-2 "
                 >
                   <span>Add to Cart</span> <span>·</span>{' '}
                   <Money
@@ -674,13 +680,13 @@ export function ProductForm({variants}) {
                 </Text>
               </AddToCartButton>
             )}
-            {!isOutOfStock && (
+            {/* {!isOutOfStock && (
               <ShopPayButton
                 width="100%"
                 variantIds={[selectedVariant?.id]}
                 storeDomain={storeDomain}
               />
-            )}
+            )} */}
           </div>
         )}
       </div>
@@ -694,8 +700,8 @@ function ProductDetail({title, content, learnMore}) {
       {({open}) => (
         <>
           <Disclosure.Button className="text-left">
-            <div className="flex justify-between">
-              <Text size="lead" as="h4">
+            <div className="flex justify-between border-t p-4">
+              <Text size="lead" as="h4" className={'text-sm'}>
                 {title}
               </Text>
               <IconClose
@@ -709,13 +715,13 @@ function ProductDetail({title, content, learnMore}) {
 
           <Disclosure.Panel className={'pb-4 pt-2 grid gap-2'}>
             <div
-              className="prose dark:prose-invert"
+              className="prose dark:prose-invert p-4"
               dangerouslySetInnerHTML={{__html: content}}
             />
             {learnMore && (
               <div className="">
                 <Link
-                  className="pb-px border-b border-primary/30 text-primary/50"
+                  className="pb-px border-b border-primary/30 text-primary/50 p-4 border-b-0"
                   to={learnMore}
                 >
                   Learn more
