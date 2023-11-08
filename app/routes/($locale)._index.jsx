@@ -54,6 +54,7 @@ export async function loader({request, params, context}) {
   const seo = seoPayload.home();
 
   return defer({
+    params,
     shop,
     primaryHero: hero,
     // These different queries are separated to illustrate how 3rd party content
@@ -110,13 +111,13 @@ export default function Homepage() {
     featuredCollections,
     featuredProducts,
     homepage,
+    shop,
+    params,
   } = useLoaderData();
 
   // TODO: skeletons vs placeholders
   const skeletons = getHeroPlaceholder([{}, {}, {}]);
-  // console.log(homeContent);
-  // console.log(homeContent[0].modules[0].content[0].asset._ref);
-
+  // console.log(params);
   return (
     <>
       {primaryHero && (

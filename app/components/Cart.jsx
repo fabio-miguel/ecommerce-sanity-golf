@@ -73,7 +73,7 @@ function CartDiscounts({discountCodes}) {
     <>
       {/* Have existing discount, display it with a remove option */}
       <dl className={codes && codes.length !== 0 ? 'grid' : 'hidden'}>
-        <div className="flex items-center justify-between font-medium">
+        <div className="flex items-center justify-between font-normal">
           <Text as="dt">Discount(s)</Text>
           <div className="flex items-center justify-between">
             <UpdateDiscountForm>
@@ -98,12 +98,15 @@ function CartDiscounts({discountCodes}) {
           )}
         >
           <input
-            className={getInputStyleClasses()}
+            className={
+              (getInputStyleClasses(),
+              'rounded-full w-full bg-gray-100 border-0')
+            }
             type="text"
             name="discountCode"
             placeholder="Discount code"
           />
-          <button className="flex justify-end font-medium whitespace-nowrap">
+          <button className="flex justify-end font-medium whitespace-nowrap text-sm">
             Apply Discount
           </button>
         </div>
@@ -159,7 +162,7 @@ function CartCheckoutActions({checkoutUrl}) {
   return (
     <div className="flex flex-col mt-2">
       <a href={checkoutUrl} target="_self">
-        <Button as="span" width="full">
+        <Button as="span" width="full" className="rounded-full">
           Continue to Checkout
         </Button>
       </a>
@@ -180,9 +183,9 @@ function CartSummary({cost, layout, children = null}) {
         Order summary
       </h2>
       <dl className="grid">
-        <div className="flex items-center justify-between font-medium">
-          <Text as="dt">Subtotal</Text>
-          <Text as="dd" data-test="subtotal">
+        <div className="flex items-center justify-between font-normal">
+          <Text className="text-sm">Subtotal</Text>
+          <Text className="text-sm" data-test="subtotal">
             {cost?.subtotalAmount?.amount ? (
               <Money data={cost?.subtotalAmount} />
             ) : (

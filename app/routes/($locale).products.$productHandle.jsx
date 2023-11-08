@@ -34,6 +34,9 @@ import {MEDIA_FRAGMENT, PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 import imageUrlBuilder from '@sanity/image-url';
 import {client} from '~/lib/sanity/sanity';
 
+import {Swiper, SwiperSlide} from 'swiper/react';
+import {Navigation, Pagination, Scrollbar, A11y} from 'swiper/modules';
+
 const builder = imageUrlBuilder(client);
 
 function urlFor(source) {
@@ -500,6 +503,45 @@ export default function Product() {
       ) : null}
 
       {/* Gallery - set up swiper for.  */}
+      <section className="mb-5 text-xl font-bold ">
+        <div className="relative">
+          <div className="mx-auto max-w-site">
+            <div className="mb-6 flex items-center justify-between md:mb-10 section-px">
+              <h2 className="text-lg md:text-h6">Gallery</h2>
+            </div>
+            <div className="swiper swiper-overflow swiper-initialized swiper-horizontal swiper-free-mode transition-opacity opacity-100 swiper-backface-hidden">
+              <Swiper
+                modules={[Navigation, A11y]}
+                spaceBetween={20}
+                slidesPerView={1}
+                breakpoints={{
+                  768: {
+                    slidesPerView: 2,
+                    spaceBetween: 30,
+                  },
+                  992: {
+                    slidesPerView: 3,
+                    spaceBetween: 40,
+                  },
+                }}
+                navigation
+                className="swimlane hiddenScroll md:pb-8 md:scroll-px-8 lg:scroll-px-12 md:px-8 lg:px-12 font-medium"
+              >
+                {sanityProduct.gallery.gallery_images.map((item) => (
+                  <SwiperSlide key={`swiperslider-${item._key}`}>
+                    <div className="w-full max-w-80 mx-auto ">
+                      <img
+                        src={urlFor(`${item.asset._ref}`).url()}
+                        alt="gallery image by fabio miguel"
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Related Products Swimlane  */}
       <Suspense fallback={<Skeleton className="h-32" />}>
@@ -721,7 +763,7 @@ function ProductDetail({title, content, learnMore}) {
             {learnMore && (
               <div className="">
                 <Link
-                  className="pb-px border-b border-primary/30 text-primary/50 p-4 border-b-0"
+                  className="pb-px border-primary/30 text-primary/50 p-4 border-b-0"
                   to={learnMore}
                 >
                   Learn more

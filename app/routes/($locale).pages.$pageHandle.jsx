@@ -45,7 +45,7 @@ export async function loader({request, params, context}) {
 }
 
 export default function Page() {
-  const {page, pageContentSanity} = useLoaderData();
+  const {page, pageContentSanity, params} = useLoaderData();
   const location = useLocation();
   const {state} = useNavigation();
   const isAboutPage = location.pathname === '/pages/about';

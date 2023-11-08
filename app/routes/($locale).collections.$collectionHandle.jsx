@@ -124,7 +124,8 @@ export default function Collection() {
   return (
     <>
       <PageHeader heading={collection.title}>
-        {collection?.description && (
+        <p className="text-xs">Click & view integrated product storytelling.</p>
+        {/* {collection?.description && (
           <div className="flex items-baseline justify-between w-full">
             <div>
               <Text format width="narrow" as="p" className="inline-block">
@@ -132,7 +133,7 @@ export default function Collection() {
               </Text>
             </div>
           </div>
-        )}
+        )} */}
       </PageHeader>
       <Section>
         <SortFilter
