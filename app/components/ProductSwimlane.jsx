@@ -82,7 +82,7 @@ export function ProductSwimlane({
         }}
         navigation
         pagination={{clickable: true}}
-        className="swimlane hiddenScroll md:pb-8 md:scroll-px-8 lg:scroll-px-12 md:px-8 lg:px-12 font-medium"
+        className="swimlane hiddenScroll md:pb-8 md:scroll-px-8 lg:scroll-px-12 md:px-8 lg:px-12 font-medium max-w-site"
       >
         {productsCategory.map((product) => (
           <SwiperSlide key={`swiperslider-${product.id}`}>

@@ -449,19 +449,19 @@ export default function Product() {
 
       {/* Complete The Look */}
       {sanityProduct.completethelook ? (
-        <section className="section-px my-15 lg:my-20 ">
+        <section className="section-px my-15 lg:my-20 overflow-hidden">
           <div className="mx-auto flex max-w-site flex-col border-b pb-15 lg:border-0 lg:pb-0">
             <h2 className="mb-5 text-xl font-bold">Complete The Look</h2>
             <div className="flex flex-col gap-5 lg:flex-row">
               {sanityProduct.completethelook.completethelookposterimage.asset
                 ._ref ? (
-                <div className="relative pt-5 ">
+                <div className="relative pt-5 max-h-[1150px]">
                   <div className="top-[calc(var(--height-nav)+5.2rem)] aspect-[4/5] max-h-[1150px] w-full lg:sticky lg:h-screen-no-nav lg:w-auto mb-16 ">
                     <img
                       src={urlFor(
                         `${sanityProduct.completethelook.completethelookposterimage.asset._ref}`,
                       ).url()}
-                      alt=""
+                      alt="complete the look main image"
                     />
                   </div>
                 </div>
@@ -477,7 +477,7 @@ export default function Product() {
                               <div className="card-image group relative aspect-[4/5]">
                                 <img
                                   src={product.store.previewImageUrl}
-                                  alt=""
+                                  alt="related product look"
                                 />
                               </div>
                               <div className="grid gap-1">
@@ -503,11 +503,11 @@ export default function Product() {
       ) : null}
 
       {/* Gallery - set up swiper for.  */}
-      <section className="mb-5 text-xl font-bold ">
+      <section className="mb-5 text-xl font-bold w-full my-15 lg:my-20 section-px">
         <div className="relative">
           <div className="mx-auto max-w-site">
-            <div className="mb-6 flex items-center justify-between md:mb-10 section-px">
-              <h2 className="text-lg md:text-h6">Gallery</h2>
+            <div className="mb-6 flex md:mb-10">
+              <h2 className="mb-5 text-xl font-bold">Gallery</h2>
             </div>
             <div className="swiper swiper-overflow swiper-initialized swiper-horizontal swiper-free-mode transition-opacity opacity-100 swiper-backface-hidden">
               <Swiper
@@ -524,8 +524,8 @@ export default function Product() {
                     spaceBetween: 40,
                   },
                 }}
-                navigation
-                className="swimlane hiddenScroll md:pb-8 md:scroll-px-8 lg:scroll-px-12 md:px-8 lg:px-12 font-medium"
+                // navigation
+                className="swimlane hiddenScroll md:pb-8 font-medium pl-0"
               >
                 {sanityProduct.gallery.gallery_images.map((item) => (
                   <SwiperSlide key={`swiperslider-${item._key}`}>

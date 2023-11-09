@@ -64,6 +64,7 @@ shop-pay-button {
 
   body {
     @apply border-primary/10 bg-contrast text-primary/90 antialiased;
+    overflow-x: hidden;
   }
 
   html {

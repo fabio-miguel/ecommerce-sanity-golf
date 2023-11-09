@@ -76,8 +76,8 @@ export default function AllProducts() {
                 </div>
                 <Grid data-test="product-grid">{itemsMarkup}</Grid>
                 <div className="flex items-center justify-center mt-6">
-                  <NextLink className="inline-block rounded font-medium text-center py-3 px-6 border border-primary/10 bg-contrast text-primary w-full">
-                    {isLoading ? 'Loading...' : 'Next'}
+                  <NextLink className="inline-block font-medium text-center py-3 px-6 border border-primary/10 bg-contrast text-primary w-full rounded-full">
+                    {isLoading ? 'Loading...' : 'Load More'}
                   </NextLink>
                 </div>
               </>
