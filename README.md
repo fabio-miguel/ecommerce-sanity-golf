@@ -4,18 +4,9 @@ Developed a comprehensive e-commerce golf store using Remix.js and Sanity.io. Th
 
 [ecommerce-golf-link](https://fullstack-pack-core-golf.vercel.app/)
 
+## Preview
 
-## Getting started
-
-**Requirements:**
-
-- Node.js version 16.14.0 or higher
-
-```bash
-npm create @shopify/hydrogen@latest -- --template demo-store
-```
-
-Remember to update `.env` with your shop's domain and Storefront API token!
+![Golf Store Preview](https://github.com/fabio-miguel/ecommerce-sanity-golf/raw/main/public/ecommerce-golf-reel.gif)
 
 ## Building for production
 
