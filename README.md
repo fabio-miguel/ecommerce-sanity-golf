@@ -1,6 +1,6 @@
 # E-commerce Golf Concept Store
 
-Developed a comprehensive e-commerce golf store using Remix.js and Sanity.io. The project featured a full-featured setup of components and routes to create a seamless shopping experience. Integrated GraphQL for efficient data querying and utilized Tailwind CSS via PostCSS to ensure a responsive and modern design. The implementation allowed for dynamic content management and a scalable front-end architecture.
+Developed a sophisticated e-commerce platform for golf enthusiasts using Remix.js and Sanity.io. This project incorporated a robust setup of components and routing to deliver a fluid shopping experience. Integrated GraphQL to streamline data querying and employed Tailwind CSS with PostCSS to achieve a modern and responsive design. The solution enabled dynamic content management and supported a scalable front-end architecture.
 
 [ecommerce-golf-link](https://fullstack-pack-core-golf.vercel.app/)
 
